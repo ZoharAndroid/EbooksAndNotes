@@ -181,3 +181,142 @@ rename table <表名称1> to <新表名称1>,<表名称2> to <新表名称2>；
 ```
 drop table <表名称>；
 ```
+
+# 第3章 使用MySQL
+
+* 显示数据库
+```
+输入：show databases;
+
+输出：
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| crashcourse        |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.00 sec)
+```
+
+* 显示表
+```
+输入：show tables;
+
+输出：
++-----------------------+
+| Tables_in_crashcourse |
++-----------------------+
+| customers             |
+| orderitems            |
+| orders                |
+| productnotes          |
+| products              |
+| vendors               |
++-----------------------+
+6 rows in set (0.00 sec)
+```
+
+* 显示表列：
+```
+输入：show columns from <表名称>;
+
+输出：
++--------------+-----------+------+-----+---------+----------------+
+| Field        | Type      | Null | Key | Default | Extra          |
++--------------+-----------+------+-----+---------+----------------+
+| cust_id      | int(11)   | NO   | PRI | NULL    | auto_increment |
+| cust_name    | char(50)  | NO   |     | NULL    |                |
+| cust_address | char(50)  | YES  |     | NULL    |                |
+| cust_city    | char(50)  | YES  |     | NULL    |                |
+| cust_state   | char(5)   | YES  |     | NULL    |                |
+| cust_zip     | char(10)  | YES  |     | NULL    |                |
+| cust_country | char(50)  | YES  |     | NULL    |                |
+| cust_contact | char(50)  | YES  |     | NULL    |                |
+| cust_email   | char(255) | YES  |     | NULL    |                |
++--------------+-----------+------+-----+---------+----------------+
+9 rows in set (0.00 sec)
+```
+# 第19章 插入数据
+
+* 插入完整的行
+```
+insert into <表名称> values(null,'zohar.zzh','90046',null,null);
+```
+> 需要注意的部分：
+> 1. 插入数据用insert into;
+> 2. 这个格式只列出表名称，所以给出的values(x,x,x)需要与表给出的顺序一致；
+> 3. 加入第一列为主键且设置为auto_increment,那么第一列的数据值可以设置为null。当你不想给出或者设置这个值的时候，就可以按照直接写成null这种方法来处理。
+
+```
+insert into <customers(cust_name,cust_address,cust_city,cust_state,cust_zip,cust_country,cust_contact,cust_email)> values(x,x,x,x,x,...); 
+```
+> 需要注意的部分：
+> 1. 列出了部分列数。
+
+* 出入多行数据
+```
+insert into <表名称(x,x,x)> values (x,x,x),(x,x,x),(x,x,x);
+```
+> 注意点：
+> 1. 插入多行数据就是在values后面用逗号，进行分隔。
+
+# 第4章 检索数据
+
+* 查询单列
+```
+输入：select prod_name from products;
+
+输出：
++----------------+
+| prod_name      |
++----------------+
+| .5 ton anvil   |
+| 1 ton anvil    |
+| 2 ton anvil    |
+| Detonator      |
+| Bird seed      |
+| Carrots        |
+| Fuses          |
+| JetPack 1000   |
+| JetPack 2000   |
+| Oil can        |
+| Safe           |
+| Sling          |
+| TNT (1 stick)  |
+| TNT (5 sticks) |
++----------------+
+```
+
+* 查询多列
+```
+输入：select prod_id,prod_name,prod_price from products;
+
+输出：
++---------+----------------+------------+
+| prod_id | prod_name      | prod_price |
++---------+----------------+------------+
+| ANV01   | .5 ton anvil   |       5.99 |
+| ANV02   | 1 ton anvil    |       9.99 |
+| ANV03   | 2 ton anvil    |      14.99 |
+| DTNTR   | Detonator      |      13.00 |
+| FB      | Bird seed      |      10.00 |
+| FC      | Carrots        |       2.50 |
+| FU1     | Fuses          |       3.42 |
+| JP1000  | JetPack 1000   |      35.00 |
+| JP2000  | JetPack 2000   |      55.00 |
+| OL1     | Oil can        |       8.99 |
+| SAFE    | Safe           |      50.00 |
+| SLING   | Sling          |       4.49 |
+| TNT1    | TNT (1 stick)  |       2.50 |
+| TNT2    | TNT (5 sticks) |      10.00 |
++---------+----------------+------------+
+```
+
+* 查询所有数据
+```
+select * from products;
+```
+
