@@ -119,3 +119,8 @@ create table produces(
 ```
 > 注意部分：
 > 1. text数据类型：最大长度为64K的变长文本。
+
+* 创建productnotes表
+```
+
+```
