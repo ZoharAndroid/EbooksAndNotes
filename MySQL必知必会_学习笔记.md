@@ -92,13 +92,13 @@ create table orders(
 * 创建orderitems表
 ```
 create table orderitems(
-    -> order_num int not null,
-    -> order_item int not null,
-    -> prod_id char(10) not null,
-    -> quantity int not null,
-    -> item_price decimal(8,2) not null,
-    -> primary key (order_num,order_item)
-    -> )engine=InnoDB;
+     order_num int not null,
+     order_item int not null,
+     prod_id char(10) not null,
+     quantity int not null,
+     item_price decimal(8,2) not null,
+     primary key (order_num,order_item)
+     )engine=InnoDB;
 ```
 > 注意部分：
 > 1. 多个列组成一个主键的格式，用逗号隔开；
@@ -109,18 +109,75 @@ create table orderitems(
 * 创建product表
 ```
 create table produces(
-    -> prod_id char(10) not null,
-    -> vend_id int not null,
-    -> prod_name char(255) not null,
-    -> prod_price decimal(8,2) not null,
-    -> prod_desc text null,
-    -> primary key (prod_id)
-    -> )engine=InnoDB;
+     prod_id char(10) not null,
+     vend_id int not null,
+     prod_name char(255) not null,
+     prod_price decimal(8,2) not null,
+     prod_desc text null,
+     primary key (prod_id)
+     )engine=InnoDB;
 ```
 > 注意部分：
 > 1. text数据类型：最大长度为64K的变长文本。
 
 * 创建productnotes表
 ```
+create table productnotes(
+     note_id int not null auto_increment,
+     prod_id char(10) not null,
+     note_date datetime not null,
+     note_text text null,
+     primary key(note_id),
+     fulltext(note_text)
+     )engine = MyISAM;
+```
+> 需要注意的部分
+> 1. fulltext(note_text)：全文本搜索。
+> 2. 引擎类型设置为：MyISAM.
 
+## 21.2 更新表
+
+使用alter table语句。
+
+* 给表添加一列：
+```
+alter table vendors add vend_phone char(20);
+```
+> 需要注意的部分：
+> 1. 更新表用alter table；
+> 2. 给一个表增加一列的格式为： add 列名 数据类型；
+
+* 给表删除一列：
+```
+alter table vendors drop column vend_phone;
+```
+> 需要注意的部分：
+> 1. 删除表中的一列格式为：drop column 列名；
+
+* 设置表的外键（alter table的常见用途）
+```
+alter table orderitems add constraint fk_orderitems_orders foreign key(order_num) references orders(order_num);
+
+alter table orderitems add constraint fk_orderitems_products foreign key(prod_id) references products(prod_id);
+
+alter table orders add constraint fk_orders_customers foreign key(cust_id) references customers(cust_id);
+
+alter table products add constraint fk_products_vendors foreign key(vend_id) references vendors(vend_id);
+```
+> 需要注意的部分：
+> 1. 设置外键格式：alter table <表名> add constraint <限制名称> foreign key(外键列) references <外表（外键列)>;
+
+* 重命名表
+```
+rename table <表名称> to <新表名称>;
+```
+
+* 重命名多个表
+```
+rename table <表名称1> to <新表名称1>,<表名称2> to <新表名称2>；
+```
+
+* 删除表
+```
+drop table <表名称>；
 ```
