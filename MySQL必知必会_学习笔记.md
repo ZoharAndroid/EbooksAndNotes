@@ -320,3 +320,110 @@ insert into <表名称(x,x,x)> values (x,x,x),(x,x,x),(x,x,x);
 select * from products;
 ```
 
+* 查询出不同的行（不显示重复的行）
+```
+mysql> select vend_id from products;
++---------+
+| vend_id |
++---------+
+|    1001 |
+|    1001 |
+|    1001 |
+|    1002 |
+|    1002 |
+|    1003 |
+|    1003 |
+|    1003 |
+|    1003 |
+|    1003 |
+|    1003 |
+|    1003 |
+|    1005 |
+|    1005 |
++---------+
+```
+>  这里可以看到有重复的值，如何消除重复呢？使用distinct
+```
+mysql> select distinct vend_id from products;
++---------+
+| vend_id |
++---------+
+|    1001 |
+|    1002 |
+|    1003 |
+|    1005 |
++---------+
+```
+> 当distinct应用于多个列，只有当多个列中的内容都相同，才会不显示，否则都会显示出来。
+> ```
+> mysql> select distinct vend_id,prod_price from products;
+>+---------+------------+
+>| vend_id | prod_price |
+>+---------+------------+
+>|    1001 |       5.99 |
+>|    1001 |       9.99 |
+>|    1001 |      14.99 |
+>|    1003 |      13.00 |
+>|    1003 |      10.00 |
+>|    1003 |       2.50 |
+>|    1002 |       3.42 |
+>|    1005 |      35.00 |
+>|    1005 |      55.00 |
+>|    1002 |       8.99 |
+>|    1003 |      50.00 |
+>|    1003 |       4.49 |
+>+---------+------------+
+> ```
+> 这里就是一个列子，如果这里有一列不同，就会显示出来。
+
+* 限制结果
+```
+mysql> select prod_name from products limit 5;
++--------------+
+| prod_name    |
++--------------+
+| .5 ton anvil |
+| 1 ton anvil  |
+| 2 ton anvil  |
+| Detonator    |
+| Bird seed    |
++--------------+
+```
+> 注意： 
+> 1. limit 5：从起始的0行到第4行，总共5行。
+> 2. 起始行是从0开始的。
+
+```
+mysql> select prod_name from products limit 5,5;
++--------------+
+| prod_name    |
++--------------+
+| Carrots      |
+| Fuses        |
+| JetPack 1000 |
+| JetPack 2000 |
+| Oil can      |
++--------------+
+```
+> 注意：
+> 1. limit 5,5：第一个数是起始行，第二个数是偏移数
+> 2. 当第2个数大于表中所有行的总数时，有多少行就列出多少行。
+> e.g. 
+> ```
+>mysql> select prod_name from products limit 10,5;
+>+----------------+
+>| prod_name      |
+>+----------------+
+>| Safe           |
+>| Sling          |
+>| TNT (1 stick)  |
+>| TNT (5 sticks) |
+>+----------------+
+>```
+> 只显示了4行。
+> 3. 当第一个数都大于表中的所有行时，就直接输出空的结果。
+> e.g.
+>```
+>mysql> select prod_name from products limit 14,5;
+>Empty set (0.00 sec)
+>```
