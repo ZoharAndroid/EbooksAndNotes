@@ -891,5 +891,171 @@ mysql> select prod_name from products where prod_name regexp '^[0-9\\.]';
 | 2 ton anvil  |
 +--------------+
 ```
-> 1. ^[0-9\\.]：表示找出文本开始为数字或者.的数据。
+> 1. \^[0-9\\.] ： 表示找出文本开始为数字或者.的数据。
 
+# 第10章 创建计算字段(拼接字段，使用别名，执行算术计算)
+
+* 拼接字段
+```
+mysql> select concat(vend_name,'(',vend_country,')') from vendors;
++----------------------------------------+
+| concat(vend_name,'(',vend_country,')') |
++----------------------------------------+
+| Anvils R Us(USA)                       |
+| LT Supplies(USA)                       |
+| ACME(USA)                              |
+| Furball Inc.(USA)                      |
+| Jet Set(England)                       |
+| Jouets Et Ours(France)                 |
++----------------------------------------+
+```
+> 1. 利用concat()函数设置输出结果。
+> 2. concat()：字符串拼接函数，函数中子字符串用的逗号进行分隔。
+
+* 消除前后空格
+```
+mysql> select concat(trim(vend_name),'(',vend_country,')') from vendors;
++----------------------------------------------+
+| concat(trim(vend_name),'(',vend_country,')') |
++----------------------------------------------+
+| Anvils R Us(USA)                             |
+| LT Supplies(USA)                             |
+| ACME(USA)                                    |
+| Furball Inc.(USA)                            |
+| Jet Set(England)                             |
+| Jouets Et Ours(France)                       |
++----------------------------------------------+
+```
+> 1. 利用trim()函数消除左右空格。
+> 2. rtrim()和ltrim()分别是消除右空格和左空格。
+
+* 使用别名
+```
+mysql> select concat(trim(vend_name),'(',vend_country,')') as vend_title from vendors;
++------------------------+
+| vend_title             |
++------------------------+
+| Anvils R Us(USA)       |
+| LT Supplies(USA)       |
+| ACME(USA)              |
+| Furball Inc.(USA)      |
+| Jet Set(England)       |
+| Jouets Et Ours(France) |
++------------------------+
+```
+> 1. 格式为：select 列 as 别名 from 表名;
+
+* 执行算术计算
+```
+mysql> select prod_id,quantity,item_price,quantity*item_price as price from orderitems where order_num = 20005;
++---------+----------+------------+-------+
+| prod_id | quantity | item_price | price |
++---------+----------+------------+-------+
+| ANV01   |       10 |       5.99 | 59.90 |
+| ANV02   |        3 |       9.99 | 29.97 |
+| TNT2    |        5 |      10.00 | 50.00 |
+| FB      |        1 |      10.00 | 10.00 |
++---------+----------+------------+-------+
+```
+> 1. 第4列为数量和单价相乘的结果。（ + - * /）都可以。
+> 2. 利用了as作为第4列别名。
+
+# 第11章 使用数据处理函数
+
+## 11.1 文本处理函数
+函数|说明|
+|:-:|:-:|
+left()|返回串最左边的字符
+right()|返回串最右边的字符
+length()|返回串的长度
+lower()|转换成小写
+upper()|转换成大写
+ltrim()|删除左边空格|
+trim()|删除左右边空格
+rtrim()|删除右边空格
+locate()|找出一个子串
+substring()|返回子串的字符
+soundex()|返回串的发音值
+
+* upper()函数的使用
+```
+mysql> select vend_name,upper(vend_name) as upper_name from vendors;
++----------------+----------------+
+| vend_name      | upper_name     |
++----------------+----------------+
+| Anvils R Us    | ANVILS R US    |
+| LT Supplies    | LT SUPPLIES    |
+| ACME           | ACME           |
+| Furball Inc.   | FURBALL INC.   |
+| Jet Set        | JET SET        |
+| Jouets Et Ours | JOUETS ET OURS |
++----------------+----------------+
+```
+> 1. 第二列变成大写
+
+* soundex()函数的使用
+```
+mysql> select cust_name,cust_contact from customers where soundex(cust_contact) = soundex('y lie');
++-------------+--------------+
+| cust_name   | cust_contact |
++-------------+--------------+
+| Coyote Inc. | Y Lee        |
++-------------+--------------+
+```
+> 1. soundex()函数是判断两者的发音是否相同，比如数据库中的为Y Lee与输出的y lie两者发音相同。
+
+## 11.2 数值处理函数
+函数|说明|
+|:-:|:-:|
+abs()|绝对值|
+cos()|余弦|
+sin()|正弦
+tan()|正切
+pi()|pi
+exp()|指数值
+mod()|余数
+sqrt()|平方根
+
+## 11.3 日期和时间处理函数
+![](https://raw.githubusercontent.com/ZoharAndroid/MarkdownImages/master/%E5%B8%B8%E7%94%A8%E6%97%B6%E9%97%B4%E5%92%8C%E6%97%A5%E6%9C%9F%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0.png)
+
+* date()函数的使用
+```
+mysql> select cust_id,order_num,order_date from orders where date(order_date)='2005-09-01';
++---------+-----------+---------------------+
+| cust_id | order_num | order_date          |
++---------+-----------+---------------------+
+|   10001 |     20005 | 2005-09-01 00:00:00 |
++---------+-----------+---------------------+
+```
+> 1. date()函数查询抽取出日期来进行比较。
+
+* 检索出某个月的数据处理方法？
+1. 方法1：
+```
+mysql> select cust_id,order_num,order_date from orders where date(order_date) between '2005-09-01' and '2005-09-30';
++---------+-----------+---------------------+
+| cust_id | order_num | order_date          |
++---------+-----------+---------------------+
+|   10001 |     20005 | 2005-09-01 00:00:00 |
+|   10003 |     20006 | 2005-09-12 00:00:00 |
+|   10004 |     20007 | 2005-09-30 00:00:00 |
++---------+-----------+---------------------+
+```
+> 1. 使用between 起始日期 and 终止日期 这种格式来判断。
+> 2. 这种方法不方便。
+
+2. 方法2：
+```
+mysql> select cust_id,order_num,order_date from orders where year(order_date)='2005' and month(order_date)='09';
++---------+-----------+---------------------+
+| cust_id | order_num | order_date          |
++---------+-----------+---------------------+
+|   10001 |     20005 | 2005-09-01 00:00:00 |
+|   10003 |     20006 | 2005-09-12 00:00:00 |
+|   10004 |     20007 | 2005-09-30 00:00:00 |
++---------+-----------+---------------------+
+```
+> 1. 使用year()和month()函数来获取年和月份。
+
+# 第12章 汇总数据
