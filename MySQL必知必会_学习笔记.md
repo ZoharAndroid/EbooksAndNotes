@@ -427,3 +427,469 @@ mysql> select prod_name from products limit 5,5;
 >mysql> select prod_name from products limit 14,5;
 >Empty set (0.00 sec)
 >```
+
+* 使用完全限定的表名（列前面用表名限定）
+```
+mysql> select products.prod_name from products;
+```
+* 表名也可以完全限定的名称(表名前用数据库名限定)
+```
+mysql> select products.prod_name from crashcourse.products;
+```
+# 第5章 排序查询数据(order by)
+
+* 排序数据
+```
+mysql> select prod_name from products order by prod_name;
++----------------+
+| prod_name      |
++----------------+
+| .5 ton anvil   |
+| 1 ton anvil    |
+| 2 ton anvil    |
+| Bird seed      |
+| Carrots        |
+| Detonator      |
+| Fuses          |
+| JetPack 1000   |
+| JetPack 2000   |
+| Oil can        |
+| Safe           |
+| Sling          |
+| TNT (1 stick)  |
+| TNT (5 sticks) |
++----------------+
+```
+> 默认按照升序进行排列（ASC）。
+
+* 按照多个列排序
+```
+mysql> select prod_id,prod_price,prod_name from products order by prod_price,prod_name;
++---------+------------+----------------+
+| prod_id | prod_price | prod_name      |
++---------+------------+----------------+
+| FC      |       2.50 | Carrots        |
+| TNT1    |       2.50 | TNT (1 stick)  |
+| FU1     |       3.42 | Fuses          |
+| SLING   |       4.49 | Sling          |
+| ANV01   |       5.99 | .5 ton anvil   |
+| OL1     |       8.99 | Oil can        |
+| ANV02   |       9.99 | 1 ton anvil    |
+| FB      |      10.00 | Bird seed      |
+| TNT2    |      10.00 | TNT (5 sticks) |
+| DTNTR   |      13.00 | Detonator      |
+| ANV03   |      14.99 | 2 ton anvil    |
+| JP1000  |      35.00 | JetPack 1000   |
+| SAFE    |      50.00 | Safe           |
+| JP2000  |      55.00 | JetPack 2000   |
++---------+------------+----------------+
+```
+> 1. 按照多个列进行排序也就是用逗号隔开。
+> 2. 多个列排序的显示规则:order by后的第一个列是主要的排列顺序，第二个列，是在第一个列中有相同的数据中进行排序，以此类推，第三个列实在第二个列有相同数据中进行排序。
+
+* 指定排序方向
+```
+mysql> select prod_id,prod_price,prod_name from products order by prod_price desc;
++---------+------------+----------------+
+| prod_id | prod_price | prod_name      |
++---------+------------+----------------+
+| JP2000  |      55.00 | JetPack 2000   |
+| SAFE    |      50.00 | Safe           |
+| JP1000  |      35.00 | JetPack 1000   |
+| ANV03   |      14.99 | 2 ton anvil    |
+| DTNTR   |      13.00 | Detonator      |
+| FB      |      10.00 | Bird seed      |
+| TNT2    |      10.00 | TNT (5 sticks) |
+| ANV02   |       9.99 | 1 ton anvil    |
+| OL1     |       8.99 | Oil can        |
+| ANV01   |       5.99 | .5 ton anvil   |
+| SLING   |       4.49 | Sling          |
+| FU1     |       3.42 | Fuses          |
+| FC      |       2.50 | Carrots        |
+| TNT1    |       2.50 | TNT (1 stick)  |
++---------+------------+----------------+
+```
+> 1. desc:为降序，asc为升序（默认）。
+
+* 多列指定排序方向
+```
+mysql> select prod_id,prod_price,prod_name from products order by prod_price desc,prod_name asc;
++---------+------------+----------------+
+| prod_id | prod_price | prod_name      |
++---------+------------+----------------+
+| JP2000  |      55.00 | JetPack 2000   |
+| SAFE    |      50.00 | Safe           |
+| JP1000  |      35.00 | JetPack 1000   |
+| ANV03   |      14.99 | 2 ton anvil    |
+| DTNTR   |      13.00 | Detonator      |
+| FB      |      10.00 | Bird seed      |
+| TNT2    |      10.00 | TNT (5 sticks) |
+| ANV02   |       9.99 | 1 ton anvil    |
+| OL1     |       8.99 | Oil can        |
+| ANV01   |       5.99 | .5 ton anvil   |
+| SLING   |       4.49 | Sling          |
+| FU1     |       3.42 | Fuses          |
+| FC      |       2.50 | Carrots        |
+| TNT1    |       2.50 | TNT (1 stick)  |
++---------+------------+----------------+
+```
+> 1. prod_price指定为降序，prod_name指定为升序。
+> 2. 如果是多个列，需要对每个列制定顺序，asc可以省略，因为默认。
+
+* order by与limit组合找到最大最小数据
+```
+mysql> select prod_price from products order by prod_price desc limit 1;
++------------+
+| prod_price |
++------------+
+|      55.00 |
++------------+
+```
+> 1. 找到最大的价格数据，prod_price 设置为降序，limit显示输出1个数据，也就是最大的数据。
+> 2. 注意order by 和limit的位置，order by 在 from 之后,limit 之前。limit在order by之后。
+
+# 第6章 过滤数据(where)
+
+* 检索出指定的值的数据
+1. =的使用
+```
+mysql> select prod_name,prod_price from products where prod_name = "fuses";
++-----------+------------+
+| prod_name | prod_price |
++-----------+------------+
+| Fuses     |       3.42 |
++-----------+------------+
+```
+> 1. 检索出prod_name的值为“fuses”的数据。
+> 2. where的位置位于from之后，如果有order by语句，那么order by 位于where之后。
+> 3. mysql默认不区分大小写。如果要区分，需要DBA去设置。
+> 4. 字符串数据用“ ”。
+
+2. <的使用
+```
+mysql> select prod_name,prod_price from products where prod_price < 10;
++---------------+------------+
+| prod_name     | prod_price |
++---------------+------------+
+| .5 ton anvil  |       5.99 |
+| 1 ton anvil   |       9.99 |
+| Carrots       |       2.50 |
+| Fuses         |       3.42 |
+| Oil can       |       8.99 |
+| Sling         |       4.49 |
+| TNT (1 stick) |       2.50 |
++---------------+------------+
+```
+> 1. 检索出价格小于10元的数据
+
+3. <=的使用
+```
+mysql> select prod_name,prod_price from products where prod_price <= 10;
++----------------+------------+
+| prod_name      | prod_price |
++----------------+------------+
+| .5 ton anvil   |       5.99 |
+| 1 ton anvil    |       9.99 |
+| Bird seed      |      10.00 |
+| Carrots        |       2.50 |
+| Fuses          |       3.42 |
+| Oil can        |       8.99 |
+| Sling          |       4.49 |
+| TNT (1 stick)  |       2.50 |
+| TNT (5 sticks) |      10.00 |
++----------------+------------+
+```
+> 1. 检索出价格小于等于10的数据
+
+4. <>/!= 的使用
+```
+mysql> select vend_id,prod_price from products where vend_id <> 1003;
++---------+------------+
+| vend_id | prod_price |
++---------+------------+
+|    1001 |       5.99 |
+|    1001 |       9.99 |
+|    1001 |      14.99 |
+|    1002 |       3.42 |
+|    1005 |      35.00 |
+|    1005 |      55.00 |
+|    1002 |       8.99 |
++---------+------------+
+```
+> 1. 检索出vend_id不等于1003的数据。
+> 2. 将<>修改成!=的效果是一样的。
+
+5. between的使用
+```
+mysql> select prod_name,prod_price from products where prod_price between 5 and 10;
++----------------+------------+
+| prod_name      | prod_price |
++----------------+------------+
+| .5 ton anvil   |       5.99 |
+| 1 ton anvil    |       9.99 |
+| Bird seed      |      10.00 |
+| Oil can        |       8.99 |
+| TNT (5 sticks) |      10.00 |
++----------------+------------+
+```
+> 1. 检索出价格为5到10之间的数据。
+> 2. between需要两个数据，且两个数据用and进行连接。
+
+* 空值检查
+```
+mysql> select cust_id from customers where cust_email is null;
++---------+
+| cust_id |
++---------+
+|   10002 |
+|   10005 |
++---------+
+```
+> 1. 检查customers表中的email是否为null。
+> 2. 用is null来判断。
+
+# 第7章 数据过滤（where通过and/or组合，in/not操作符的使用）
+
+* and操作符
+```
+mysql> select vend_id,prod_price,prod_name from products where vend_id=1003 and prod_price<=10;
++---------+------------+----------------+
+| vend_id | prod_price | prod_name      |
++---------+------------+----------------+
+|    1003 |      10.00 | Bird seed      |
+|    1003 |       2.50 | Carrots        |
+|    1003 |       4.49 | Sling          |
+|    1003 |       2.50 | TNT (1 stick)  |
+|    1003 |      10.00 | TNT (5 sticks) |
++---------+------------+----------------+
+```
+> 1. 查询出vend_id = 1003 并且价格小于等于10的数据。
+> 2. 每多添加一个条件就用and进行连接。
+
+* or操作符
+```
+mysql> select vend_id,prod_name from products where vend_id = 1002 or vend_id = 1003;
++---------+----------------+
+| vend_id | prod_name      |
++---------+----------------+
+|    1003 | Detonator      |
+|    1003 | Bird seed      |
+|    1003 | Carrots        |
+|    1002 | Fuses          |
+|    1002 | Oil can        |
+|    1003 | Safe           |
+|    1003 | Sling          |
+|    1003 | TNT (1 stick)  |
+|    1003 | TNT (5 sticks) |
++---------+----------------+
+```
+> 1. 找出vend_id = 1002 或者 1003的数据。
+
+* and和or操作符的优先级
+```
+mysql> select prod_name,prod_price from products where (vend_id = 1002 or vend_id = 1003) and prod_price >= 10;
++----------------+------------+
+| prod_name      | prod_price |
++----------------+------------+
+| Detonator      |      13.00 |
+| Bird seed      |      10.00 |
+| Safe           |      50.00 |
+| TNT (5 sticks) |      10.00 |
++----------------+------------+
+```
+> 1. 找出vend_id = 1002 或者 1003 并且价格大于等于10的数据。
+> 2. 注意使用括号调整优先级，and优先级最高，如果不加括号，输出的结果会不同。
+
+* in操作符
+```
+mysql> select vend_id,prod_name,prod_price from products where vend_id in (1001,1002,1003) order by prod_name;
++---------+----------------+------------+
+| vend_id | prod_name      | prod_price |
++---------+----------------+------------+
+|    1001 | .5 ton anvil   |       5.99 |
+|    1001 | 1 ton anvil    |       9.99 |
+|    1001 | 2 ton anvil    |      14.99 |
+|    1003 | Bird seed      |      10.00 |
+|    1003 | Carrots        |       2.50 |
+|    1003 | Detonator      |      13.00 |
+|    1002 | Fuses          |       3.42 |
+|    1002 | Oil can        |       8.99 |
+|    1003 | Safe           |      50.00 |
+|    1003 | Sling          |       4.49 |
+|    1003 | TNT (1 stick)  |       2.50 |
+|    1003 | TNT (5 sticks) |      10.00 |
++---------+----------------+------------+
+```
+> 1. 找出vend_id为1001，1002，1003的所有值。
+
+* not in操作符
+```
+mysql> select vend_id,prod_name from products where vend_id not in (1002,1003);
++---------+--------------+
+| vend_id | prod_name    |
++---------+--------------+
+|    1001 | .5 ton anvil |
+|    1001 | 1 ton anvil  |
+|    1001 | 2 ton anvil  |
+|    1005 | JetPack 1000 |
+|    1005 | JetPack 2000 |
++---------+--------------+
+```
+> 1. 找出vend_id不在1002和1003的数据。
+
+# 第8章 用通配符进行过滤（like操作符，%和_通配符）
+
+* %通配符
+```
+mysql> select prod_id,prod_name from products where prod_name like "%anvil%";
++---------+--------------+
+| prod_id | prod_name    |
++---------+--------------+
+| ANV01   | .5 ton anvil |
+| ANV02   | 1 ton anvil  |
+| ANV03   | 2 ton anvil  |
++---------+--------------+
+```
+> 1. 查询包含"anvil“的数据。
+> 2. %就是包含任意个数的字符。
+
+* _通配符
+```
+mysql> select prod_id,prod_name from products where prod_name like "_ ton anvil";
++---------+-------------+
+| prod_id | prod_name   |
++---------+-------------+
+| ANV02   | 1 ton anvil |
+| ANV03   | 2 ton anvil |
++---------+-------------+
+```
+> 1. 找出prod_name的字符串为”x ton anvil"的数据。
+> 2. _通配符表示一个字符。
+
+# 第9章 正则表达式进行搜索（regexp)
+* 匹配基本字符
+```
+mysql> select prod_name from products where prod_name regexp ".000";
++--------------+
+| prod_name    |
++--------------+
+| JetPack 1000 |
+| JetPack 2000 |
++--------------+
+```
+> 1. 匹配prod_name中包含的有x000的。.表示一个字符.
+
+* 进行or匹配
+```
+mysql> select prod_name from products where prod_name regexp '1000|2000';
++--------------+
+| prod_name    |
++--------------+
+| JetPack 1000 |
+| JetPack 2000 |
++--------------+
+```
+> 1. 匹配prod_name中包含的有1000和2000的数据。
+> 2. |是正则表达式的or操作符.
+
+* 匹配几个字符之一
+```
+mysql> select prod_name from products where prod_name regexp '[123] ton';
++-------------+
+| prod_name   |
++-------------+
+| 1 ton anvil |
+| 2 ton anvil |
++-------------+
+```
+> 1. [123]是匹配1或者2或者3。
+> 2. 效果同'[1|2|3] ton'。‘|’可以省略。
+
+需要注意要用[]来定义，否则会出现问题：
+```
+mysql> select prod_name from products where prod_name regexp '1|2|3 ton';
++---------------+
+| prod_name     |
++---------------+
+| 1 ton anvil   |
+| 2 ton anvil   |
+| JetPack 1000  |
+| JetPack 2000  |
+| TNT (1 stick) |
++---------------+
+```
+> 1. 这里没有用[]括起来，要查询的结果也就不正确了。这里查询的结果是包含'1','2'和‘3 tom'的字符串数据。
+
+* 匹配范围
+```
+mysql> select prod_name from products where prod_name regexp '[0-5] ton';
++--------------+
+| prod_name    |
++--------------+
+| .5 ton anvil |
+| 1 ton anvil  |
+| 2 ton anvil  |
++--------------+
+```
+> 1. [0-5]匹配0至5的任意字符。
+> 2. [a-z] : 任意小写字符；[A-Z]:任意大写字符;[0-9]：数字字符。
+
+* 匹配特殊字符
+```
+mysql> select vend_name  from vendors where vend_name regexp '\\.';
++--------------+
+| vend_name    |
++--------------+
+| Furball Inc. |
++--------------+
+```
+> 1. '\\\\.'匹配带有.的数据。
+> 2. mysql转移字符用双斜杠来表示。
+
+* 匹配多个实例
+
+重复元字符|说明
+|:-:|:-:|
+*|0个或多个匹配
++|1个或多个匹配(等于{1,})
+?|0个或1个匹配(等于{0,1})
+{n}|指定数目的匹配
+{n,}|不少于指定数目的匹配
+{n,m}|匹配数目范围
+
+```
+mysql> select prod_name from products where prod_name regexp '\\([0-9] sticks?\\)';
++----------------+
+| prod_name      |
++----------------+
+| TNT (1 stick)  |
+| TNT (5 sticks) |
++----------------+
+```
+> 1.匹配(数字 stick/sticks)的数据。\\\\(是转移字符，s?表示的是s字符有0个或者1个。
+
+```
+mysql> select prod_name from products where prod_name regexp '[0-9]{4}';
++--------------+
+| prod_name    |
++--------------+
+| JetPack 1000 |
+| JetPack 2000 |
++--------------+
+```
+> 1. [0-9]{4}表示4个任意数字字符。所以这条查询算法就是找出包含4个数字的数据。
+
+* 定位符
+^：表示文本的开头；$：表示文本的结尾。
+```
+mysql> select prod_name from products where prod_name regexp '^[0-9\\.]';
++--------------+
+| prod_name    |
++--------------+
+| .5 ton anvil |
+| 1 ton anvil  |
+| 2 ton anvil  |
++--------------+
+```
+> 1. ^[0-9\\.]：表示找出文本开始为数字或者.的数据。
+
