@@ -1158,3 +1158,59 @@ mysql> select count(*) as num_items,avg(prod_price) as avg_price,min(prod_price)
 |        14 | 16.133571 |      2.50 |     55.00 |
 +-----------+-----------+-----------+-----------+
 ```
+
+# 第13章 分组数据(group by/having/order by的使用)
+
+* group by创建分组
+```
+mysql> select vend_id,count(*) as num_prods from products group by vend_id;
++---------+-----------+
+| vend_id | num_prods |
++---------+-----------+
+|    1001 |         3 |
+|    1002 |         2 |
+|    1003 |         7 |
+|    1005 |         2 |
++---------+-----------
+```
+> 1. 通过vend_id创建分组；
+> 2. 如果当前列中的行有null值，会单独归为一行，多个null值归为一组。
+
+* having分组过滤
+```
+mysql> select cust_id,count(*) as orders from orders group by cust_id having count(*)>=2;
++---------+--------+
+| cust_id | orders |
++---------+--------+
+|   10001 |      2 |
++---------+--------+
+```
+> 1. 找出订单数大于等于2的顾客。
+> 2. where是在数据分组前进行过滤，having是在数据分组之后进行过滤。
+
+* where与having的共同使用
+```
+mysql> mysql> select vend_id,count(*) as num_prod from products where prod_price >= 10 group by vend_id having count(*) >= 2;
++---------+-----------------+
+| vend_id | order_nnum_prod |
++---------+-----------------+
+|    1003 |               4 |
+|    1005 |               2 |
++---------+-----------------+
+```
+> 1. where是过滤掉价格小于10的数据，通过group by分组，having过滤掉小于2的数据。
+
+* 分组和order by排序
+```
+mysql> select order_num,sum(quantity*item_price) as ordertotal from orderitems group by order_num having sum(quantity*item_price) >= 50 order by ordertotal;
++-----------+------------+
+| order_num | ordertotal |
++-----------+------------+
+|     20006 |      55.00 |
+|     20008 |     125.00 |
+|     20005 |     149.87 |
+|     20007 |    1000.00 |
++-----------+------------+
+```
+> 1. 最后通过group by将分组后的数据进行排序。
+
