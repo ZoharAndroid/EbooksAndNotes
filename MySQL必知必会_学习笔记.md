@@ -1059,3 +1059,102 @@ mysql> select cust_id,order_num,order_date from orders where year(order_date)='2
 > 1. 使用year()和month()函数来获取年和月份。
 
 # 第12章 汇总数据
+函数|说明
+|:-:|:-:|
+avg()|平均值
+count()|列的数目
+max()|当前列的最大值
+min()|当前列的最小值
+sum()|当前列的之和
+
+* avg()函数
+```
+mysql> select avg(prod_price) as price_avg from products where vend_id = 1003;
++-----------+
+| price_avg |
++-----------+
+| 13.212857 |
++-----------+
+```
+> 1. 查询出vend_id = 1003的平均价格;
+> 2. avg()函数为求平均的价格;
+> 3. 值为null的行将会被忽略。
+
+* count()函数
+1. count(*)的使用
+```
+mysql> select count(*) as num_cust from customers;
++----------+
+| num_cust |
++----------+
+|        5 |
++----------+
+```
+> 1. 找出customers表中的所有行的数目;
+> 2. count(*)将统计任意值的行，包括null值。
+
+2. count(列名称)的使用
+```
+mysql> select count(cust_email) as num_cust from customers;
++----------+
+| num_cust |
++----------+
+|        3 |
++----------+
+```
+> 1. cust_email中有null值，所以显示的结果就为3。（总共是5行）
+
+* max()函数
+```
+mysql> select max(prod_price) as max_price from products;
++-----------+
+| max_price |
++-----------+
+|     55.00 |
++-----------+
+```
+> 1. 找出最大值
+> 2. 忽略null值。
+
+* min()函数
+```
+mysql> select min(prod_price) as min_price from products;
++-----------+
+| min_price |
++-----------+
+|      2.50 |
++-----------+
+```
+> 1. 找出最小值，且会忽略null行。
+
+* sum()函数
+```
+mysql> select sum(item_price * quantity) as total_price from orderitems where order_num = 20005;
++-------------+
+| total_price |
++-------------+
+|      149.87 |
++-------------+
+```
+> 1. 返回价格之和，且会忽略null的行。
+
+* 用distinct聚合不同值
+```
+mysql> select avg(distinct prod_price) as avg_price from products where vend_id = 1003;
++-----------+
+| avg_price |
++-----------+
+| 15.998000 |
++-----------+
+```
+> 1. 使用distinct就是将相同的值只显示1个。
+
+* 组合聚合函数
+```
+mysql> select count(*) as num_items,avg(prod_price) as avg_price,min(prod_price) as min_price,max(prod_price) as max_price from products;
++-----------+-----------+-----------+-----------+
+| num_items | avg_price | min_price | max_price |
++-----------+-----------+-----------+-----------+
+|        14 | 16.133571 |      2.50 |     55.00 |
++-----------+-----------+-----------+-----------+
+```
