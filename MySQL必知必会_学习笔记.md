@@ -1245,4 +1245,58 @@ ysql> select cust_name,cust_state,(select count(*) from orders where orders.cust
 > 1. 找出每个客户的订单数。这里用到了count(*)聚合计算函数，和表的级联（orders.cust_id = customers.cust_id)。
 > 2. 表的级联一定要指定前面的表名，否则会发成冲突。
 
+# 第15章 联结表
+
+# 15.1 联结多个表
+```
+mysql> select prod_name,vend_name,prod_price,quantity from orderitems,products,vendors where products.vend_id = vendors.vend_id and products.prod_id = orderitems.prod_id and order_num = 20005;
++----------------+-------------+------------+----------+
+| prod_name      | vend_name   | prod_price | quantity |
++----------------+-------------+------------+----------+
+| .5 ton anvil   | Anvils R Us |       5.99 |       10 |
+| 1 ton anvil    | Anvils R Us |       9.99 |        3 |
+| TNT (5 sticks) | ACME        |      10.00 |        5 |
+| Bird seed      | ACME        |      10.00 |        1 |
++----------------+-------------+------------+----------+
+```
+> 1. 联结表操作，通过where子句中的主键和外键的相等判断即可。
+
+# 15.2 内部链接(<表名1> inner join <表名2> on <表1.外键 = 表2.主键>)
+* 二个表的内部联结查询语句
+```
+mysql> select vend_name,prod_name,prod_price from vendors inner join products on products.vend_id = vendors.vend_id;
++-------------+----------------+------------+
+| vend_name   | prod_name      | prod_price |
++-------------+----------------+------------+
+| Anvils R Us | .5 ton anvil   |       5.99 |
+| Anvils R Us | 1 ton anvil    |       9.99 |
+| Anvils R Us | 2 ton anvil    |      14.99 |
+| LT Supplies | Fuses          |       3.42 |
+| LT Supplies | Oil can        |       8.99 |
+| ACME        | Detonator      |      13.00 |
+| ACME        | Bird seed      |      10.00 |
+| ACME        | Carrots        |       2.50 |
+| ACME        | Safe           |      50.00 |
+| ACME        | Sling          |       4.49 |
+| ACME        | TNT (1 stick)  |       2.50 |
+| ACME        | TNT (5 sticks) |      10.00 |
+| Jet Set     | JetPack 1000   |      35.00 |
+| Jet Set     | JetPack 2000   |      55.00 |
++-------------+----------------+------------+
+```
+> 1. 内部联结就是等值联结。等同于where 表1.x = 表2.x;
+
+* 三个表内部联结查询语句
+```
+mysql> select prod_name,vend_name,prod_price,quantity from (products inner join vendors on products.vend_id = vendors.vend_id) inner join orderitems on products.prod_id = orderitems.prod_id where order_num = 20005;
++----------------+-------------+------------+----------+
+| prod_name      | vend_name   | prod_price | quantity |
++----------------+-------------+------------+----------+
+| .5 ton anvil   | Anvils R Us |       5.99 |       10 |
+| 1 ton anvil    | Anvils R Us |       9.99 |        3 |
+| TNT (5 sticks) | ACME        |      10.00 |        5 |
+| Bird seed      | ACME        |      10.00 |        1 |
++----------------+-------------+------------+----------+
+```
+> 1. 多个表的联结需要注意下格式.
 
