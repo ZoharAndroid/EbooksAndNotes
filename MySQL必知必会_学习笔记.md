@@ -1214,3 +1214,35 @@ mysql> select order_num,sum(quantity*item_price) as ordertotal from orderitems g
 ```
 > 1. 最后通过group by将分组后的数据进行排序。
 
+# 第14章 使用子查询(Where条件下和计算字段函数下的子查询)
+
+# 14.1 where条件下的 
+```
+mysql> select cust_name,cust_contact from customers where cust_id in ( select cust_id from orders where order_num in ( select order_num from orderitems where prod_id = 'TNT2'));
++----------------+--------------+
+| cust_name      | cust_contact |
++----------------+--------------+
+| Coyote Inc.    | Y Lee        |
+| Yosemite Place | Y Sam        |
++----------------+--------------+
+```
+> 1. 找出产品类型为TNT2的顾客信息。这就要求需要用到子查询。
+> 2. 子查询一般和in操作符结合使用。
+
+# 14.2 计算字段函数下的
+```
+ysql> select cust_name,cust_state,(select count(*) from orders where orders.cust_id = customers.cust_id) as order_num from customers;
++----------------+------------+-----------+
+| cust_name      | cust_state | order_num |
++----------------+------------+-----------+
+| Coyote Inc.    | MI         |         2 |
+| Mouse House    | OH         |         0 |
+| Wascals        | IN         |         1 |
+| Yosemite Place | AZ         |         1 |
+| E Fudd         | IL         |         1 |
++----------------+------------+-----------+
+```
+> 1. 找出每个客户的订单数。这里用到了count(*)聚合计算函数，和表的级联（orders.cust_id = customers.cust_id)。
+> 2. 表的级联一定要指定前面的表名，否则会发成冲突。
+
+
