@@ -1300,3 +1300,71 @@ mysql> select prod_name,vend_name,prod_price,quantity from (products inner join 
 ```
 > 1. 多个表的联结需要注意下格式.
 
+# 第16章 高级联结(自联结、自然联结、外部联结)
+
+## 16.1 自联结
+
+自己联结自己（联结的表相同）。
+```
+mysql> select p1.prod_id,p1.prod_name from products as p1 ,products as p2 where p1.vend_id = p2.vend_id and p2.prod_id = 'DTNTR';
++---------+----------------+
+| prod_id | prod_name      |
++---------+----------------+
+| DTNTR   | Detonator      |
+| FB      | Bird seed      |
+| FC      | Carrots        |
+| SAFE    | Safe           |
+| SLING   | Sling          |
+| TNT1    | TNT (1 stick)  |
+| TNT2    | TNT (5 sticks) |
++---------+----------------+
+```
+
+## 16.2 自然连接
+
+## 16.3 外部联结
+* 内部联结(inner join)
+```
+mysql> select customers.cust_id,orders.order_num from customers inner join orders on customers.cust_id = orders.cust_id;
++---------+-----------+
+| cust_id | order_num |
++---------+-----------+
+|   10001 |     20005 |
+|   10001 |     20009 |
+|   10003 |     20006 |
+|   10004 |     20007 |
+|   10005 |     20008 |
++---------+-----------+
+```
+
+* 左外部联结(left outer join)
+```
+mysql> select customers.cust_id,orders.order_num from customers left outer join orders on customers.cust_id = orders.cust_id;
++---------+-----------+
+| cust_id | order_num |
++---------+-----------+
+|   10001 |     20005 |
+|   10001 |     20009 |
+|   10002 |      NULL |
+|   10003 |     20006 |
+|   10004 |     20007 |
+|   10005 |     20008 |
++---------+-----------+
+```
+> 1. left outer join是以左边的表为主。
+
+* 右外部联结(right outer join)
+```
+mysql> select customers.cust_id,orders.order_num from customers right outer join orders on customers.cust_id = orders.cust_id;
++---------+-----------+
+| cust_id | order_num |
++---------+-----------+
+|   10001 |     20005 |
+|   10001 |     20009 |
+|   10003 |     20006 |
+|   10004 |     20007 |
+|   10005 |     20008 |
++---------+-----------+
+```
+> 1. right outer join以右边的表显示为主.
+> 2. 做外部表和右外部表可以相互转换。
