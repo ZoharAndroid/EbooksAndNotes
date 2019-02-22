@@ -1368,3 +1368,63 @@ mysql> select customers.cust_id,orders.order_num from customers right outer join
 ```
 > 1. right outer join以右边的表显示为主.
 > 2. 做外部表和右外部表可以相互转换。
+
+# 第17章 组合查询(union)
+
+## 17.1 使用union 
+```
+mysql> select vend_id,prod_id,prod_price from products where prod_price <= 5 union select vend_id,prod_id,prod_price from products where vend_id in (1001,1002);
++---------+---------+------------+
+| vend_id | prod_id | prod_price |
++---------+---------+------------+
+|    1003 | FC      |       2.50 |
+|    1002 | FU1     |       3.42 |
+|    1003 | SLING   |       4.49 |
+|    1003 | TNT1    |       2.50 |
+|    1001 | ANV01   |       5.99 |
+|    1001 | ANV02   |       9.99 |
+|    1001 | ANV03   |      14.99 |
+|    1002 | OL1     |       8.99 |
++---------+---------+------------+
+```
+> 1. 使用union将两个表的查询结果组合在一起。
+> 2. union中的每个查询必须包含相同的列、表达式或者聚集函数。
+
+## 17.2 消除或者包含重复的行(union all/union)
+```
+mysql> select vend_id,prod_id,prod_price from products where prod_price <= 5 union all  select vend_id,prod_id,prod_price from products where vend_id in (1001,1002);
++---------+---------+------------+
+| vend_id | prod_id | prod_price |
++---------+---------+------------+
+|    1003 | FC      |       2.50 |
+|    1002 | FU1     |       3.42 |
+|    1003 | SLING   |       4.49 |
+|    1003 | TNT1    |       2.50 |
+|    1001 | ANV01   |       5.99 |
+|    1001 | ANV02   |       9.99 |
+|    1001 | ANV03   |      14.99 |
+|    1002 | FU1     |       3.42 |
+|    1002 | OL1     |       8.99 |
++---------+---------+------------+
+```
+> 1. 使用union all 可以显示全部的查询结果，使用union就会默认删除掉重复的结果。
+
+## 17.2 对组合查询结果排序(order by)
+```
+mysql> select vend_id,prod_id,prod_price from products where prod_price <= 5 union all  select vend_id,prod_id,prod_price from products where vend_id in (1001,1002) order by vend_id,prod_price;
++---------+---------+------------+
+| vend_id | prod_id | prod_price |
++---------+---------+------------+
+|    1001 | ANV01   |       5.99 |
+|    1001 | ANV02   |       9.99 |
+|    1001 | ANV03   |      14.99 |
+|    1002 | FU1     |       3.42 |
+|    1002 | FU1     |       3.42 |
+|    1002 | OL1     |       8.99 |
+|    1003 | FC      |       2.50 |
+|    1003 | TNT1    |       2.50 |
+|    1003 | SLING   |       4.49 |
++---------+---------+------------+
+```
+> 1. order by 在组合查询中只能写在最后面，但是能够对所有的结果进行统一的排序。
+
