@@ -1605,3 +1605,67 @@ Query OK, 0 rows affected (0.00 sec)
 ```
 > 1. 格式：delete from <表名称> where <条件>。
 
+# 第22章 视图
+
+视图是虚拟的表。视图包含的不是数据而是根据需要检索数据的查询。视图提供了一种select语句层次的封装，可以用来简化数据处理以及重新格式化基础数据或者保护基础数据。
+
+## 22.1 使用视图简化复杂的联结
+```
+mysql> create view productcustomers as select cust_name,cust_contact,prod_id from customers,orders,orderitems where customers.cust_id = orders.cust_id and orderitems.order_num = orders.order_num;
+Query OK, 0 rows affected (0.44 sec)
+
+mysql> select * from productcustomers;
++----------------+--------------+---------+
+| cust_name      | cust_contact | prod_id |
++----------------+--------------+---------+
+| Coyote Inc.    | Y Lee        | ANV01   |
+| Coyote Inc.    | Y Lee        | ANV02   |
+| Coyote Inc.    | Y Lee        | TNT2    |
+| Coyote Inc.    | Y Lee        | FB      |
+| Coyote Inc.    | Y Lee        | FB      |
+| Coyote Inc.    | Y Lee        | OL1     |
+| Coyote Inc.    | Y Lee        | SLING   |
+| Coyote Inc.    | Y Lee        | ANV03   |
+| Wascals        | Jim Jones    | JP2000  |
+| Yosemite Place | Y Sam        | TNT2    |
+| The fudds      | E Fudd       | FC      |
++----------------+--------------+---------+
+```
+> 1. 通过create view <视图名> as select语句来创建视图，然后通过视图名称来获取查询的数据。
+
+## 22.2 使用视图重新格式化检索出来的数据
+```
+mysql> create view vendorlocations as select concat(rtrim(vend_name),'(',rtrim(vend_country),')') as vent_title from vendors order by vend_name;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> select * from vendorlocations;
++------------------------+
+| vent_title             |
++------------------------+
+| ACME(USA)              |
+| Anvils R Us(USA)       |
+| Furball Inc.(USA)      |
+| Jet Set(England)       |
+| Jouets Et Ours(France) |
+| LT Supplies(USA)       |
++------------------------+
+```
+> 1. 可以将有concat的select语句创建视图。
+
+## 22.3 使用视图过滤不要的数据
+```
+mysql> create view customeremail as select cust_id,cust_name,cust_email from customers where cust_email is not null;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select * from customeremail;
++---------+----------------+---------------------+
+| cust_id | cust_name      | cust_email          |
++---------+----------------+---------------------+
+|   10001 | Coyote Inc.    | ylee@coyote.com     |
+|   10003 | Wascals        | rabbit@wascally.com |
+|   10004 | Yosemite Place | sam@yosemite.com    |
+|   10005 | The fudds      | elmer@fudds.com     |
++---------+----------------+---------------------+
+```
+> 1. 过滤掉了email数据为空的数据。
+
