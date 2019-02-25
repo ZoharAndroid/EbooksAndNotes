@@ -1586,3 +1586,22 @@ This is rarely a problem as safes are typically blown up or dropped by customers
 +---------------------------------------------------------------------------------------------------------------------------------------------------+
 ```
 > 1. 匹配safe和combination，降低后者等级。
+
+# 第20章 更新和删除数据(update和delete)
+
+## 20.1 update的使用
+```
+mysql> update customers set cust_name = 'The fudds',cust_email= 'elmer@fudds.com' where cust_id = 10005;
+Query OK, 1 row affected (0.11 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+```
+> 1. update <表名> set 列名称1=值,列名称2=值... where <条件>。
+> 2. 要设置多个列数的值，中间用逗号进行分隔。
+
+## 20.2 delete的使用
+```
+mysql> delete from customers where cust_id=10006;
+Query OK, 0 rows affected (0.00 sec)
+```
+> 1. 格式：delete from <表名称> where <条件>。
+
